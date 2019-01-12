@@ -3,7 +3,7 @@ import time
 
 
 def deal_content(resp):
-    content = resp.content.decode()
+    content = resp.content
     print "="*77
     print content
     print "="*77
