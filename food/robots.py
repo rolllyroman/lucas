@@ -83,6 +83,8 @@ def test():
         resp = requests.get(src,headers=HEADERS)
         html = etree.HTML(resp.content)
 
+        print resp.content
+
         heads = html.xpath("//div//span/img/@src")
         names = html.xpath("//strong/text()")
 
