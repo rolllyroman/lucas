@@ -32,10 +32,12 @@ def deal_content(resp):
         players[name] = src
 
 def get_words():
+    words = set()
     url = "https://hanyu.baidu.com/shici/detail?pid=0b2f26d4c0ddb3ee693fdb1137ee1b0d&from=kg0"
     resp = requests.get(url,headers=HEADERS)
-    return resp.content
-
+    for w in resp.content:
+        words.add(w)
+    return words
 
 def main():
     words = get_words()
