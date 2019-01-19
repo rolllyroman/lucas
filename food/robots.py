@@ -59,9 +59,11 @@ def get_words():
 def main():
     words = get_words()
     for w in words:
+        pass
 
 
 def test():
+
     url = "https://weixin.sogou.com/weixin?query=%E6%9D%8E&_sug_type_=&s_from=input&_sug_=n&type=1&page=2&ie=utf8"
     resp = requests.get(url,headers=HEADERS)
     
