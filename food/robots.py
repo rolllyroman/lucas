@@ -21,8 +21,8 @@ HEADERS = {'Accept': 'text/html, application/xhtml+xml, image/jxr, */*',
 
 BASIC_URL = "https://weixin.sogou.com/weixin?query=%s&_sug_type_=&s_from=input&_sug_=n&type=1&page=%s&ie=utf8"
 
-conn=MySQLdb.connect(host="119.23.52.3",user="root",passwd="168mysql",db="haha",charset="utf8")  
-cursor = db.cursor()
+conn = MySQLdb.connect(host="119.23.52.3",user="root",passwd="168mysql",db="haha",charset="utf8")  
+cursor = conn.cursor()
 
 def search_list(word):
     for i in range(1,11):
