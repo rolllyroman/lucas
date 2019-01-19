@@ -35,8 +35,16 @@ def search_list(word):
         for src in detail_srcs:
             resp = requests.get(src,headers=HEADERS)
             html = etree.HTML(resp.content)
-            head = html.xpath("//div//span/img/@src")[0].replace("http","https")
-            name = html.xpath("//strong/text()")[0]
+
+            heads = html.xpath("//div//span/img/@src")
+            names = html.xpath("//strong/text()")
+            print "heads:"
+            print heads
+            print "names:"
+            print names
+
+            head = heads[0]
+            name = names[0]
 
             print '-----------------------'
             print name,head
