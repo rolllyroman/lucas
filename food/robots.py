@@ -4,7 +4,6 @@ import time
 from lxml import etree
 import json
 
-from constant import NAMES
 
 # with open("robots.json","r") as f:
 #     content = f.read()
@@ -33,11 +32,9 @@ def deal_content(resp):
         players[name] = src
 
 def get_words():
-    words = set()
-    for w in NAMES:
-        words.add(w)
-
-    return words
+    url = "https://hanyu.baidu.com/shici/detail?pid=0b2f26d4c0ddb3ee693fdb1137ee1b0d&from=kg0"
+    resp = requests.get(url,headers=HEADERS)
+    return resp.content
 
 
 def main():
