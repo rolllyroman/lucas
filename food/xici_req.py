@@ -91,6 +91,10 @@ class Spider(object):
                 continue
 
             time.sleep(1)
+
+            sql = "delete from got_word where num = 0"
+            self.cursor.execute(sql)
+
             sql = "insert into got_word(word) values(%s)"
             self.cursor.execute(sql,(w,))
 
@@ -102,9 +106,6 @@ class Spider(object):
             self.list_page = 1
             print "%s 爬取完毕，列表页重新从%s页开始爬取"%(w,self.list_page)
 
-
-            sql = "delete from got_word where num = 0"
-            self.cursor.execute(sql)
 
     def run(self):
         self.proxy = self.get_proxy()

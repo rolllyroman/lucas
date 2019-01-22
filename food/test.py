@@ -36,6 +36,9 @@ sys.setdefaultencoding( "utf-8" )
 proxies = {"http":"http://14.115.106.218:808","https":"https://125.123.139.172:9000"}
 proxies = {"http":"http://14.115.106.218:808"}
 proxies = {"https":"https://125.123.139.172:9000"}
+
+proxies = {"http":"http://180.118.128.254:9000"}
+
 url = "https://weixin.sogou.com/weixin?query=1&_sug_type_=&s_from=input&_sug_=n&type=1&page=1&ie=utf8"
 resp = requests.get(url,proxies=proxies)
 
