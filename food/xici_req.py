@@ -43,6 +43,13 @@ class Spider(object):
 
         self.list_page = 1
 
+        self.searched_word = []
+        sql = "select word from got_word where word = %s"
+        self.cursor.execute(sql,(w,))
+        res = self.cursor.fetchall()
+        for r in res:
+            self.searched_word.append(r)
+
     def get_proxy(self):
         if not self.proxy_list:
             self.nn += 1
@@ -84,31 +91,23 @@ class Spider(object):
 
     def start_search(self):
         for w in self.words:
-            sql = "select word from got_word where word = %s"
-            self.cursor.execute(sql,(w,))
-            if self.cursor.fetchone():
+            if w in self.searched_word:
                 print "%s 已搜过，跳过..."%w
                 continue
 
-            time.sleep(1)
-
-            sql = "delete from got_word where num = 0"
-            self.cursor.execute(sql)
-
-            sql = "insert into got_word(word) values(%s)"
-            self.cursor.execute(sql,(w,))
-
             print "开始搜索:%s"%w
             self.search_list(w)
-
-            time.sleep(1)
 
             self.list_page = 1
             print "%s 爬取完毕，列表页重新从%s页开始爬取"%(w,self.list_page)
 
 
     def run(self):
+        sql = "delete from got_word where num = 0"
+        self.cursor.execute(sql)
+
         self.proxy = self.get_proxy()
+        self.list_page = 1
 
         print "代理：%s"%self.proxy
 
@@ -161,7 +160,7 @@ class Spider(object):
                 resp = requests.get(src,headers=self.headers,proxies=self.proxy,timeout=3)
             except Exception as e:
                 print str(e)
-                print "FAILED REPATE SPIDER..........."
+                print "详情页响应超时...."
                 time.sleep(1)
                 self.run()
 
@@ -181,10 +180,9 @@ class Spider(object):
             sql = "insert into robot(weixin,name,head) values(%s,%s,%s)"
             self.cursor.execute(sql,(weixin,name,head))
 
-            sql = "update got_word set num = num + 1 where word = %s"
-            self.cursor.execute(sql,(word,))
 
-            print weixin,name,head,"ok!" 
+            print weixin,name,head,"获取成功！！!" 
+
             time.sleep(1)
 
     def __del__(self):
