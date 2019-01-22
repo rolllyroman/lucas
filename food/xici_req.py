@@ -81,11 +81,10 @@ class Spider(object):
         self.list_page = 1
 
         self.searched_word = []
-        sql = "select word from got_word where word = %s"
-        self.cursor.execute(sql,(w,))
+        sql = "select word from got_word"
         res = self.cursor.fetchall()
         for r in res:
-            self.searched_word.append(r)
+            self.searched_word.append(r[0])
 
     def get_proxy(self):
         if not self.proxy_list:
