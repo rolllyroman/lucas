@@ -118,7 +118,7 @@ class Spider(object):
             url = self.basic_url%(word,self.list_page)
 
             try:
-                resp = requests.get(url,headers=self.headers,proxies=self.proxy,timeout=5)
+                resp = requests.get(url,headers=self.headers,proxies=self.proxy,timeout=3)
             except Exception as e:
                 print str(e)
                 print "代理:%s爬取失败，更换ip重新爬取..."%str(self.proxy)
@@ -155,7 +155,7 @@ class Spider(object):
             src = detail_srcs[i]
 
             try:
-                resp = requests.get(src,headers=self.headers,proxies=self.proxy,timeout=5)
+                resp = requests.get(src,headers=self.headers,proxies=self.proxy,timeout=3)
             except Exception as e:
                 print str(e)
                 print "FAILED REPATE SPIDER..........."
