@@ -82,6 +82,7 @@ class Spider(object):
 
         self.searched_word = []
         sql = "select word from got_word"
+        self.cursor.execute(sql)
         res = self.cursor.fetchall()
         for r in res:
             self.searched_word.append(r[0])
