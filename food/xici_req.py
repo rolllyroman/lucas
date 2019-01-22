@@ -142,6 +142,7 @@ class Spider(object):
             self.deal_detail(weixins,detail_srcs,word)
 
             self.list_page += 1
+            time.sleep(1)
 
 
     def deal_detail(self,weixins,detail_srcs,word):
