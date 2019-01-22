@@ -32,7 +32,7 @@ class Spider(object):
         # 西刺url
         self.ip_url = "https://www.xicidaili.com/nt/%s"
         # 西刺第几页
-        self.nn = 3
+        self.nn = 1
 
         self.driver = None
 
@@ -94,6 +94,8 @@ class Spider(object):
                 continue
 
             time.sleep(1)
+            sql = "insert into got_word(word) values(%s)"
+            self.cursor.execute(sql,(w,))
 
             print "开始搜索:%s"%w
             self.search_list(w)
@@ -106,8 +108,6 @@ class Spider(object):
 
             sql = "delete from got_word where num = 0"
             self.cursor.execute(sql)
-            sql = "insert into got_word(word) values(%s)"
-            self.cursor.execute(sql,(w,))
 
     def run(self):
         self.proxy = self.get_proxy()
