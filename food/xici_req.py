@@ -161,7 +161,6 @@ class Spider(object):
             except Exception as e:
                 print str(e)
                 print "详情页响应超时...."
-                time.sleep(1)
                 self.run()
 
             content = resp.content
