@@ -16,7 +16,8 @@ class Spider(object):
 
     headers = {'Accept': 'text/html, application/xhtml+xml, image/jxr, */*',
            'Accept-Language':'zh-Hans-CN, zh-Hans; q=0.5',
-           'Connection':'Keep-Alive',
+           # 'Connection':'Keep-Alive',
+            'Connection': 'close',
            'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36 Edge/15.15063'}
 
     basic_url = "https://weixin.sogou.com/weixin?query=%s&_sug_type_=&s_from=input&_sug_=n&type=1&page=%s&ie=utf8"
