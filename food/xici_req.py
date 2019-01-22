@@ -27,12 +27,12 @@ class Spider(object):
 
     def __init__(self):
         # 代理池
-        self.op_proxies = []  
+        self.proxy_list = []  
 
         # 西刺url
         self.ip_url = "https://www.xicidaili.com/nt/%s"
         # 西刺第几页
-        self.nn = 1
+        self.nn = 3
 
         self.driver = None
 
@@ -46,8 +46,8 @@ class Spider(object):
 
         self.list_page = 1
 
-    def get_ip(self):
-        if not self.op_proxies:
+    def get_proxy(self):
+        if not self.proxy_list:
             self.nn += 1
             url = self.ip_url%self.nn
 
@@ -64,13 +64,14 @@ class Spider(object):
                 port = port_list[i]
                 xieyi = xieyi_list[i].lower()
 
-                op_proxy = "--proxy-server=%s://%s:%s"%(xieyi,ip,port)
+                if xieyi == "https" or xieyi == "http":
+                    # op_proxy = "--proxy-server=%s://%s:%s"%(xieyi,ip,port)
+                    proxy = {xieyi:"%s://%s:%s"%(xieyi,ip,port)}
+                    self.proxy_list.append(proxy)
 
-                self.op_proxies.append(op_proxy)
+            print "ip池更新：%s"%self.proxy_list
 
-            print "ip池更新：%s"%self.op_proxies
-
-        return self.op_proxies.pop()
+        return self.proxy_list.pop()
 
     def get_words(self):
         words = set()
@@ -92,13 +93,15 @@ class Spider(object):
                 print "%s 已搜过，跳过..."%w
                 continue
 
+            time.sleep(1)
+
             print "开始搜索:%s"%w
             self.search_list(w)
 
             time.sleep(1)
 
             self.list_page = 1
-            print "%s 爬取完毕，列表页重新从%s开始爬取"%(w,self.list_page)
+            print "%s 爬取完毕，列表页重新从%s页开始爬取"%(w,self.list_page)
 
 
             sql = "delete from got_word where num = 0"
@@ -107,34 +110,9 @@ class Spider(object):
             self.cursor.execute(sql,(w,))
 
     def run(self):
-        chromeOptions = webdriver.ChromeOptions()
-        # 设置代理
-        self.ip = self.get_ip()
-        chromeOptions.add_argument(self.ip)
+        self.proxy = self.get_proxy()
 
-        # 把chrome设置成无界面模式，不论windows还是linux都可以，自动适配对应参数
-        # chromeOptions.set_headless()
-
-        # 一定要注意，=两边不能有空格，不能是这样--proxy-server = http://202.20.16.82:10152
-        self.driver = webdriver.Chrome(chrome_options = chromeOptions)
-
-        # 测试ip是否可以用
-        print "ip:%s"%self.ip
-        # try:
-
-        # test_url = "http://httpbin.org/ip"
-        # self.driver.get(test_url)
-        # test_source = self.driver.page_source
-        # if len(test_source)>200:
-        #     print "测试ip失败，ip不可用，跳过...".decode('utf-8').encode('gb2312')
-        #     self.driver.quit()
-        #     self.run()
-
-        # except:
-        #     print "超时,开始更换ip爬取...".decode('utf-8').encode('gb2312')
-        #     self.driver.close()
-        #     self.run()
-        
+        print "代理：%s"%self.proxy
 
         self.start_search()
 
@@ -142,18 +120,15 @@ class Spider(object):
         while self.list_page < 11:
             print "开始爬取 %s 列表页第%s页..."%(word,self.list_page)
             url = self.basic_url%(word,self.list_page)
-            # resp = requests.get(url,headers=HEADERS)
+
             try:
-                self.driver.get(url)
-            except:
-                print "超时,开始更换ip爬取..."
-                self.driver.close()
-                time.sleep(1)
+                resp = requests.get(url,headers=self.headers,proxies=self.proxy)
+            except Exception as e:
+                print str(e)
+                print "代理:%s爬取失败，更换ip重新爬取..."%str(self.proxy)
                 self.run()
 
-            time.sleep(1)
-
-            content = self.driver.page_source.encode("utf-8")
+            content = resp.content
             html = etree.HTML(content)
 
             weixins = html.xpath("//label/text()")
@@ -161,8 +136,6 @@ class Spider(object):
 
             if len(weixins) == 1:
                 print "错误:%s,开始更换ip爬取..."%weixins[0]
-                self.driver.close()
-                time.sleep(1)
                 self.run()
 
             if not weixins:
@@ -186,14 +159,14 @@ class Spider(object):
             src = detail_srcs[i]
 
             try:
-                self.driver.get(src)
-            except:
-                print "超时,开始更换ip爬取..."
-                self.driver.close()
+                resp = requests.get(src,headers=self.headers,proxies=self.proxy)
+            except Exception as e:
+                print str(e)
+                print "FAILED REPATE SPIDER..........."
                 time.sleep(1)
                 self.run()
 
-            content = self.driver.page_source.encode("utf-8")
+            content = resp.content
             html = etree.HTML(content)
 
             heads = html.xpath("//div//span/img/@src")
@@ -201,8 +174,6 @@ class Spider(object):
 
             if not names:
                 print "ip被判断为非正常用户，开始更换ip爬取..."
-                self.driver.close()
-                time.sleep(1)
                 self.run()
 
             head = heads[0].replace("http","https")
@@ -220,7 +191,6 @@ class Spider(object):
     def __del__(self):
         self.cursor.close()
         self.conn.close()
-        self.driver.close()
 
 if __name__ == "__main__":
     Spider().run()
