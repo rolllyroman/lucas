@@ -51,15 +51,16 @@ class MyPool(object):
 
                 proxies = {xieyi:"%s://%s:%s"%(xieyi,ip,port)}
 
-                # 超时说明ip质量差 跳过
                 try:
                     resp = requests.get(self.test_url,proxies=proxies,headers=self.get_headers(),timeout=1)
                 except:
+                    print "%s 超时,跳过..."%ip
                     continue
 
                 # 本机ip说明无效 跳过
                 content = resp.content
                 if content.startswith(self.local_ip):
+                    print "%s 失效,跳过..."%ip
                     continue
 
                 self.redis.sadd("proxies:set",str(proxies))   
