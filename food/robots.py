@@ -12,9 +12,8 @@ import sys
 reload(sys)
 sys.setdefaultencoding( "utf-8" )
 
-# with open("robots.json","r") as f:
-#     content = f.read()
-#     players = json.loads(content)
+
+from constant import USER_AGENT
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -37,7 +36,9 @@ driver = webdriver.Chrome(chrome_options = chromeOptions)
 HEADERS = {'Accept': 'text/html, application/xhtml+xml, image/jxr, */*',
            'Accept-Language':'zh-Hans-CN, zh-Hans; q=0.5',
            'Connection':'Keep-Alive',
-           'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36 Edge/15.15063'}
+           # 'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36 Edge/15.15063'}
+            'User-Agent':random.choice(USER_AGENT),
+           }
 
 
 BASIC_URL = "https://weixin.sogou.com/weixin?query=%s&_sug_type_=&s_from=input&_sug_=n&type=1&page=%s&ie=utf8"
