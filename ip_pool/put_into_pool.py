@@ -9,7 +9,7 @@ from constants import USER_AGENTS
 class MyPool(object):
     
    
-    local_ip = "59.42.121"
+    local_ip = "119.23.52.3"
     # 测试ip地址
     test_url = "http://icanhazip.com/" 
     # 西刺代理
