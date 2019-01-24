@@ -96,5 +96,7 @@ class CheckPool(BasePool):
 
 
 if __name__ == "__main__":
-    PutPool().start()
-    CheckPool().start()
+    t1 = PutPool()
+    t1.start()
+    t2 = CheckPool()
+    t2.start()
