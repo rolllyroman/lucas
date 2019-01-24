@@ -79,8 +79,9 @@ class CheckPool(BasePool):
             proxies_set = self.redis.smembers("proxies:set")
             num = len(proxies_set)
             print "当前入库有效ip数量%s"%num
+            time.sleep(1)
             for proxies in proxies_set:
-                ip = eval(proxies).values()[0]
+                ip = eval(proxies).values()[-]
                 try:
                     resp = requests.get(self.test_url,proxies=proxies,headers=self.get_headers(),timeout=1)
                 except:
