@@ -101,7 +101,6 @@ class CheckPool(BasePool):
 
 
 if __name__ == "__main__":
-    time.sleep(10000)
     t1 = PutPool()
     t2 = CheckPool()
     t1.start()
