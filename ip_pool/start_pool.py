@@ -83,7 +83,7 @@ class CheckPool(BasePool):
                 try:
                     resp = requests.get(self.test_url,proxies=proxies,headers=self.get_headers(),timeout=1)
                 except:
-                    print "入库中的ip %s 超时,出库..."%ip
+                    print "入库中的ip %s 超时,出库..."%self.ip
                     self.redis.srem("proxies:set",proxies)
                     continue
 
