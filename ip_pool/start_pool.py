@@ -21,8 +21,6 @@ class BasePool(threading.Thread):
         self.ip_page = 1
         self.redis = redis.Redis(host='127.0.0.1', port=6379,db=1)
 
-        self.put_proxies_list()
-
     def get_headers(self):
         return {
             'Accept': 'text/html, application/xhtml+xml, image/jxr, */*',
