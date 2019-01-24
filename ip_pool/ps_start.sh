@@ -1,1 +1,0 @@
-ps ajx|grep start_pool
