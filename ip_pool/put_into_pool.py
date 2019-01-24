@@ -2,11 +2,12 @@
 import requests
 import random
 import redis
+import threading
 
 from lxml import etree
 from constants import USER_AGENTS
 
-class MyPool(object):
+class BasePool(threading.Thread):
     
    
     local_ip = "119.23.52.3"
@@ -30,41 +31,72 @@ class MyPool(object):
             "User-Agent":random.choice(USER_AGENTS),
         }
 
+class PutPool(BasePool):
+
     # 开始投放有效ip代理
-    def put_proxies_list(self):
-        while self.ip_page < 3000:
-            self.ip_page += 1
-            url = self.ip_url%self.ip_page
+    def run(self):
+        while 1:
+            while self.ip_page < 3000:
+                self.ip_page += 1
+                url = self.ip_url%self.ip_page
 
-            resp = requests.get(url,headers=self.get_headers())
-            content = resp.content
+                resp = requests.get(url,headers=self.get_headers())
+                content = resp.content
 
-            html = etree.HTML(content)
+                html = etree.HTML(content)
 
-            xieyi_list = html.xpath("//tr/td[last()-4]/text()")
-            port_list = html.xpath("//tr/td[last()-7]/text()")
-            ip_list = html.xpath("//tr/td[last()-8]/text()")
+                xieyi_list = html.xpath("//tr/td[last()-4]/text()")
+                port_list = html.xpath("//tr/td[last()-7]/text()")
+                ip_list = html.xpath("//tr/td[last()-8]/text()")
 
-            for i,ip in enumerate(ip_list):
-                port = port_list[i]
-                xieyi = xieyi_list[i].lower()
+                for i,ip in enumerate(ip_list):
+                    port = port_list[i]
+                    xieyi = xieyi_list[i].lower()
 
-                proxies = {xieyi:"%s://%s:%s"%(xieyi,ip,port)}
+                    if xieyi not in ["http","https"]:
+                        continue
 
+                    proxies = {xieyi:"%s://%s:%s"%(xieyi,ip,port)}
+
+                    try:
+                        resp = requests.get(self.test_url,proxies=proxies,headers=self.get_headers(),timeout=1)
+                    except:
+                        print "%s 超时,跳过..."%ip
+                        continue
+
+                    # 本机ip说明无效 跳过
+                    content = resp.content
+                    if content.startswith(self.local_ip):
+                        print "%s 失效,跳过..."%ip
+                        continue
+
+                    self.redis.sadd("proxies:set",str(proxies))   
+                    print "%s 有效，成功入库。"%ip
+
+class CheckPool(BasePool):
+    def run(self):
+        while 1:
+            proxies_set = self.redis.smembers("proxies:set")
+            num = len(proxies_set)
+            print "当前入库有效ip数量%s"%num
+            for proxies in proxies_set:
                 try:
                     resp = requests.get(self.test_url,proxies=proxies,headers=self.get_headers(),timeout=1)
                 except:
-                    print "%s 超时,跳过..."%ip
+                    print "入库中的ip %s 超时,出库..."%ip
+                    self.redis.srem("proxies:set",proxies)
                     continue
 
                 # 本机ip说明无效 跳过
                 content = resp.content
                 if content.startswith(self.local_ip):
-                    print "%s 失效,跳过..."%ip
+                    print "入库中的ip %s 失效,出库..."%ip
+                    self.redis.srem("proxies:set",proxies)
                     continue
 
-                self.redis.sadd("proxies:set",str(proxies))   
-                print "%s 有效，成功入库。"
+                print "入库中的ip %s 有效,开始检测下一个..."%ip
 
 
-MyPool()
+if __name__ == "__main__":
+    PutPool().start()
+    CheckPool().start()
