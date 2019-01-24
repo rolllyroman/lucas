@@ -80,10 +80,11 @@ class CheckPool(BasePool):
             num = len(proxies_set)
             print "当前入库有效ip数量%s"%num
             for proxies in proxies_set:
+                ip = eval(proxies).values()[0]
                 try:
                     resp = requests.get(self.test_url,proxies=proxies,headers=self.get_headers(),timeout=1)
                 except:
-                    print "入库中的ip %s 超时,出库..."%self.ip
+                    print "入库中的ip %s 超时,出库..."%eval(proxies).keys()
                     self.redis.srem("proxies:set",proxies)
                     continue
 
