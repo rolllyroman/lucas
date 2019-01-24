@@ -22,7 +22,7 @@ class BasePool(threading.Thread):
         self.redis = redis.Redis(host='127.0.0.1', port=6379,db=1)
 
         # threading.Thread.__init__(self) 
-        super.__init__()
+        super().__init__()
 
     def get_headers(self):
         return {
