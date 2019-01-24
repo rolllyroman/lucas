@@ -60,7 +60,7 @@ class PutPool(BasePool):
                     proxies = {xieyi:"%s://%s:%s"%(xieyi,ip,port)}
 
                     try:
-                        resp = requests.get(self.test_url,proxies=proxies,headers=self.get_headers(),timeout=1)
+                        resp = requests.get(self.test_url,proxies=proxies,headers=self.get_headers(),timeout=3)
                     except:
                         print "%s 超时,跳过..."%ip
                         continue
@@ -84,7 +84,7 @@ class CheckPool(BasePool):
             for proxies in proxies_set:
                 ip = eval(proxies).values()[0]
                 try:
-                    resp = requests.get(self.test_url,proxies=proxies,headers=self.get_headers(),timeout=1)
+                    resp = requests.get(self.test_url,proxies=proxies,headers=self.get_headers(),timeout=3)
                 except:
                     print "入库中的ip %s 超时,出库..."%ip
                     self.redis.srem("proxies:set",proxies)
